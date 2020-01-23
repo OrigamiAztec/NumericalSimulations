@@ -1,1 +1,1 @@
-import plotly.graph_objects as go
+analytical_sol
