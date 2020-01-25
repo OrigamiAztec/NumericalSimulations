@@ -1,3 +1,7 @@
+#Antonio Diaz UIN 327003625 TAMU 2022
+#Numerical Simulations 430 
+#Hmwk 1 graphing and plotting exat solutions
+
 # -*- coding: utf-8 -*
 import sys
 import numpy as np
@@ -31,8 +35,8 @@ def case_1_produce_FDE_matrix(n):
     # alpha_sum const open to change
     alpha = 4
     delta_x = 1.0/(2**n)
-    alpha_sum_const = 2+alpha**2*delta_x**2
-    case_1_row_triple = [1, -alpha_sum_const, 1]
+    k = 2+alpha**2*delta_x**2
+    case_1_row_triple = [1, -k, 1]
 
     FDE_matrix[0][0:2] = case_1_row_triple[1:3]
 
@@ -41,11 +45,11 @@ def case_1_produce_FDE_matrix(n):
 
     FDE_matrix[2**n-2][2**n-3:2**n-1] = case_1_row_triple[0:2]
 
-    print(FDE_matrix)
+    #print(FDE_matrix)
     return(FDE_matrix)
 
 #creating resultant matrix
-n=3
+n=4
 resultant_matrix = np.zeros((2**n-1,1))
 resultant_matrix[2**n-2,0] = -100
 #print(resultant_matrix)
@@ -61,7 +65,7 @@ for i in np.nditer(solution_matrix):
 
 temp_solutions_list.append(100)
 
-def analytical_sol(n):
+def analytical_sol_case1(n):
     # Bar Parameters ----------------------------------------------------------------------------------------------------------------------------------
     k = .5              # thermal conductivity of material
     R = .1              # cross section radius
@@ -85,7 +89,7 @@ def analytical_sol(n):
         analytical_sol_list.append(i.tolist())
     return analytical_sol_list
 
+print("Case 1 solution:")
 for i in range(0, len(temp_solutions_list)):
-    print(u'{:.5f} cm : T_(FDM) = {:.5f} \xb0C, T_analytical = {:.5f} \xb0C'.format(pos_along_rod_list_cm[i], temp_solutions_list[i], analytical_sol(n)[i]))
+    print(u'{:.5f} cm : T_(FDM) = {:.5f} \xb0C, T_analytical = {:.5f} \xb0C'.format(pos_along_rod_list_cm[i], temp_solutions_list[i], analytical_sol_case1(n)[i]))
 
-print(analytical_sol(n))
