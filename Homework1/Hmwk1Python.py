@@ -1,6 +1,8 @@
 #Antonio Diaz UIN 327003625 TAMU 2022
 #Numerical Simulations 430 
-#Hmwk 1 Case 1 FDM Solutions 
+#Hmwk 1 Case 1 Analytical Solution 
+#Code used from past year report, fixed labelling of charts using .format string.s
+
 
 # -*- coding: utf-8 -*-
 import sys

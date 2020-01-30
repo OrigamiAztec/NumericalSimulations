@@ -8,6 +8,9 @@ import sys
 import numpy as np
 import matplotlib.pyplot as plt
 from math import sin, pi
+import matplotlib.pyplot as plt
+
+from richardsons import richardsons
 
 #attempt to create more general method for smaller delta x
 # input n divisions (2, 3, 4, ...), output left side FDE matrix
@@ -83,8 +86,11 @@ Q_approx_list = []
 
 #output q_dot total, deltaX, T_approx, T_exact, percent error, beta value results for division of 2, 3, 4, 5, 6, 7,8 - (2^n outputs)
 #for n in range (2, 9):
-for n in range(2, 9):
-    print(n)
+flux_array = []
+total_beta_list = []
+total_error_list = []
+for n in range(2, 11):
+    print('n = {:d}'.format(n))
     #n=2
     alpha = 4
     delta_x = 1.0/(2**n)
@@ -122,13 +128,6 @@ for n in range(2, 9):
     T_exact = analytical_sol_case2(2)[0]
     percent_error = (-analytical_sol_case2(2)[0] + temp_solutions_list[0])/analytical_sol_case2(2)[0]*100
     
-
-    #print('DeltaX : {:.6f}, T_approx(0) : {:.6f}, T_exact(0) : {:.6f}, Percent Error : {:.6f}, q_dot_total_approx : {:.6f}, q_dot_tota_exact : {:.6f} , beta : {:.6f}'.format(delta_x,T_approx, T_exact, percent_error, q_dot_env_approx, q_dot_env_exact, beta))
-
-    #print(np.linspace(0, 1, 2**n+1))
-    #print(temp_solutions_list)
-    test_array = temp_solutions_list
-    
     def simpson(a, b, n, input_array):
         sum = 0
         inc = (b - a) / n
@@ -142,8 +141,32 @@ for n in range(2, 9):
         return ((b - a) / (3 * n)) * sum
 
     # Examples of use
-    
-    #print(simpson(0, 1, len(test_array)-1, test_array))
+    #print(simpson(0, 1, len(test_array)-1, test_array))a
     perimeter = 2*pi*R
-    print(h*perimeter*simpson(0, 1, len(test_array)-1, test_array))
+    test_array = temp_solutions_list
+    lateral_flux_val = h*perimeter*simpson(0, 1, len(test_array)-1, test_array)
+    #print(lateral_flux_val)
+    flux_array.append(lateral_flux_val)
+    if n > 2:
+        print('DeltaX : {:.6f}, Q_extrapolated : {:.6f}, Beta: {:.6f}'.format(delta_x, richardsons(flux_array)[0], richardsons(flux_array)[1]))
+        total_beta_list.append(richardsons(flux_array)[1])
+    
+    print('DeltaX : {:.6f}, HeatFluxLateral : {:.6f}'.format(delta_x, lateral_flux_val))
+    #print(type(lateral_flux_val))
+
+    print('DeltaX : {:.6f}, T_approx(0) : {:.6f}, T_exact(0) : {:.6f},Percent Error : {:.6f}, q_dot_total_approx : {:.6f}, q_dot_tota_exact : {:.6f} , beta : {:.6f}'.format(delta_x,T_approx, T_exact, percent_error, q_dot_env_approx, q_dot_env_exact, beta))
+    #print(np.linspace(0, 1, 2**n+1))
+    #print(temp_solutions_list)
+    total_error_list.append(percent_error)
+    
+    
+    
+delta_x_array = [1/(2**1), 1/(2**2), 1/(2**3), 1/(2**4), 1/(2**5), 1/(2**6), 1/(2**7), 1/(2**8)]
+#print(total_error_list[1:9])
+#print(total_beta_list[1:9])
+plt.title("DeltaX vs Beta convergence for case 2")
+plt.plot(delta_x_array[1:9], np.log(total_beta_list[1:9]))
+plt.ylabel('Beta')
+plt.xlabel('DeltaX')
+plt.show()
 
