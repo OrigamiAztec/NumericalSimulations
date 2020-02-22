@@ -21,14 +21,14 @@ def case_1_produce_FDE_matrix(n):
     # fourth order k
     # k = 2+alpha**2*delta_x**2*(1 + delta_x**2/12*alpha**2)
     # sixth order k
-    #k = 2+alpha**2*delta_x**2*(1 + delta_x**2/12*alpha**2+delta_x**4/360*alpha**4)
+    # k = 2+alpha**2*delta_x**2*(1 + delta_x**2/12*alpha**2+delta_x**4/360*alpha**4)
     # eighth order k
-    k = 2+alpha**2*delta_x**2*(1 + delta_x**2/12*alpha**2+delta_x**4/360*alpha**4+delta_x**6/20160*alpha**6)
+    # k = 2+alpha**2*delta_x**2*(1 + delta_x**2/12*alpha**2+delta_x**4/360*alpha**4+delta_x**6/20160*alpha**6)
     # tenth order k
-    #k = 2+alpha**2*delta_x**2*(1 + delta_x**2/12*alpha**2+delta_x**4/360*alpha**4+delta_x**6/2160*alpha**6+delta_x**8/1814400*alpha**8)
-    print("K value used in matrix")
-    print(k)
-    case_1_row_triple = [-1, k, -1]
+    k = 2+alpha**2*delta_x**2*(1 + delta_x**2/12*alpha**2+delta_x**4/360*alpha**4+delta_x**6/20160*alpha**6+delta_x**8/1814400*alpha**8)
+    # print("K value used in matrix")
+    # print(k)
+    case_1_row_triple = [1, -k, 1]
 
     FDE_matrix[0][0:2] = case_1_row_triple[1:3]
 
@@ -70,15 +70,18 @@ def analytical_sol_case1(n):
 log_error_list = []
 log_deltax_list = []
 
-for n in range(6, 12):
+for n in range(2, 14):
     print('results for n = {:.2f}'.format(n))
+    print('\u0394X = 1/2^({:.2f})'.format(n))
     resultant_matrix = np.zeros((2**n-1,1))
-    resultant_matrix[2**n-2,0] = 100
-    #print(resultant_matrix)
+    resultant_matrix[2**n-2,0] = -100
+    # print("FDE matrix:")
+    # print(case_1_produce_FDE_matrix(n))
+
+    # print("Resultant matrix")
+    # print(resultant_matrix)
 
     a_matrix_inverse = np.linalg.inv(case_1_produce_FDE_matrix(n))
-    #print("FDE matrix:")
-    #print(case_1_produce_FDE_matrix(n))
     solution_matrix = np.dot(a_matrix_inverse, resultant_matrix)
     pos_along_rod_list_cm = np.linspace(0, 1, num=2**n+1)
     temp_solutions_list = [0]
@@ -88,25 +91,35 @@ for n in range(6, 12):
 
     temp_solutions_list.append(100)
 
-    print("Temp solutions")
-    print(temp_solutions_list)
+    # print("Temp FDM outputs:")
+    # print(temp_solutions_list)
 
-    halfway = len(temp_solutions_list)/2
-    print('Delta X = 1/2^({:.2f})'.format(n))
-    print(u'{:.12f} cm : T_FDM = {:.12f} \xb0C,  T_analytical = {:.12f} \xb0C, error = {:.12f}'.format(pos_along_rod_list_cm[halfway], temp_solutions_list[halfway], analytical_sol_case1(n)[(2**n+1)/2],  (temp_solutions_list[halfway]-analytical_sol_case1(n)[(2**n+1)/2])/analytical_sol_case1(n)[(2**n+1)/2]*100))
+    halfway = int(len(temp_solutions_list)/2)
+    print("FDM output at halfway point:")
+    print('{:.10f} \xb0C'.format(temp_solutions_list[halfway]))
+    print("True analytical solution list at halfway point: ")
+    print('{:.10f} \xb0C'.format(analytical_sol_case1(n)[halfway]))
+    # print(u'{:.12f} cm : T_FDM = {:.12f} \xb0C,  T_analytical = {:.12f} \xb0C, error = {:.12f}'.format(pos_along_rod_list_cm[halfway], temp_solutions_list[halfway], analytical_sol_case1(n)[halfway],  (temp_solutions_list[halfway]-analytical_sol_case1(n)[halfway])/analytical_sol_case1(n)[halfway]*100))
 
-    log_deltax_list.append(1.0/2**n)
-    print(log_deltax_list)
-    log_error_list.append((-temp_solutions_list[halfway]+analytical_sol_case1(n)[(2**n+1)/2])/analytical_sol_case1(n)[(2**n+1)/2]*100)
-    print(log_error_list)
+    log_deltax_list.append(np.log(1.0/2**n))
+    # print(log_deltax_list)
+    log_error_list.append(np.log(np.abs((-temp_solutions_list[halfway]+analytical_sol_case1(n)[halfway])/analytical_sol_case1(n)[halfway]*100)))
+    # print(log_error_list)
+    
+    
+    if (n > 3):
+        print("Beta Value:")
+        last_index = len(log_error_list)-1
+        print((log_error_list[last_index]-log_error_list[last_index-1])/(log_deltax_list[last_index]-log_deltax_list[last_index-1]))
 
-log_deltax_list = np.log(log_deltax_list)
-log_error_list = np.log(np.abs(log_error_list))
-
-print("log(DeltaX):")
-print(log_deltax_list)
-print("log(Error):")
-print(log_error_list)
+    print(" ")
+# print("log(DeltaX):")
+# print(log_deltax_list)
+# print("log(Error):")
+# print(log_error_list)
+# print("Beta value:")
+#last_index = len(log_error_list)-1
+#print((log_error_list[last_index]-log_error_list[last_index-1])/(log_deltax_list[last_index]-log_deltax_list[last_index-1]))
 plt.title("10th order FDM Convergence of Temperature at .5 cm")
 plt.plot(log_deltax_list,log_error_list)
 plt.xlabel('log DeltaX')
