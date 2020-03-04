@@ -1,0 +1,12 @@
+BEGIN options
+  SAVE_FLOWS
+END options
+
+BEGIN packages
+  DIS6  mymodel.dis  dis
+  IC6  mymodel.ic  ic
+  NPF6  mymodel.npf  npf
+  CHD6  mymodel.chd  chd_0
+  OC6  mymodel.oc  oc
+END packages
+

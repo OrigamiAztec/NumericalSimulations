@@ -39,16 +39,15 @@ class Mesh(object):
         self.N = N
         self.a = a
         self.b = b
-
     
     def coordinates(self):
-        return self.a
+        return self.N
     
     def cells(self, a, b):
-        return self.a*self.b
+        return (self.a - self.b)/self.N
     
     def size(self, N):
-        return self.N
+        return self.a*self.b
 
 
 N=5
