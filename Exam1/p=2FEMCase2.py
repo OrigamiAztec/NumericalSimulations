@@ -1,5 +1,5 @@
-#running code for p = 2 with increasing number of elements from 2**1 to 2**12
-# case 1
+# p = 2 case 2 with FEM 
+
 
 import numpy as np
 from scipy import integrate
@@ -52,8 +52,9 @@ def analytical_sol_case1(n):
     x = np.linspace(0, 1, 2**n+1)   
     a=4
     h = a**2 * k * R / 2
-    C = (T_l - Ta - (Tb-Ta)*np.cosh(a*L))/np.sinh(a*L)
-    D = 0 
+    Tl = 100
+    C = h/(k*a)*(Tl/(h/(k*a)*np.sinh(a*L)+np.cosh(a*L))-Ta)
+    D = Tl/(h/(k*a)*np.sinh(a*L)+np.cosh(a*L))-Ta
     T = C*np.sinh(a*x) + D*np.cosh(a*x) + Ta
     analytical_sol_list = []
     for i in np.nditer(T):
@@ -86,9 +87,12 @@ def outputAssembledPlot():
 
     graphing_node_1 = np.linspace(delta_x*0, delta_x, 5000)
 
-    graphing_node_2 = np.linspace(delta_x*1, delta_x*2, 5000)
-
     alpha = 4
+
+    k = .5                         # hermal conductivity of material
+    R = .1                         # radius
+    h = alpha**2 * k * R / 2       # heat transfer coefficient 
+        
     p = 2
     global_matrix_dim = number_of_elements + 1
     #print(global_matrix_dim)
@@ -100,7 +104,7 @@ def outputAssembledPlot():
     k_21 = hierarchicalTest.k(2, 1, alpha, graphing_node_1) -  hierarchicalTest.k(2, 3, alpha, graphing_node_1)* hierarchicalTest.k(3, 1, alpha, graphing_node_1) /  hierarchicalTest.k(3, 3, alpha, graphing_node_1) 
     k_22 = hierarchicalTest.k(2, 2, alpha, graphing_node_1) -  hierarchicalTest.k(2, 3, alpha, graphing_node_1)* hierarchicalTest.k(3, 2, alpha, graphing_node_1) /  hierarchicalTest.k(3, 3, alpha, graphing_node_1) 
 
-    global_test_1[0][0] = k_11 + penality_factor
+    global_test_1[0][0] = k_11 + h/k
     global_test_1[0][1] = k_12
 
     row_start = 0
@@ -120,13 +124,17 @@ def outputAssembledPlot():
     #print(resultant_matrix)
 
     temp_outputs = np.linalg.solve(global_test_1,resultant_matrix)
-    #print(temp_outputs)
-    middle = len(analytical_sol_case1(6))/2
-    true_val = analytical_sol_case1(6)[int(middle)]
-    error = (temp_outputs[len(temp_outputs)/2]) - true_val
-    #p1_error_array.append(error)
-    #p1_delta_array.append(delta_x)
+    print("Estimated from code: ")
+    print(temp_outputs[0])
+    print("true:")
+    print(analytical_sol_case1(12)[0])
 
+    middle = len(analytical_sol_case1(6))/2
+    true_val = analytical_sol_case1(12)[0]
+    error = (temp_outputs[0]) - true_val
+    p1_error_array.append(error)
+    p1_delta_array.append(delta_x)
+    
     plt.plot(np.linspace(0, 1, len(temp_outputs)), temp_outputs,  label = r'$\Delta x = {:.4f}$'.format(delta_x))
 
 for n in range(1, 13):

@@ -1,5 +1,6 @@
-# running code for p = 1 with increasing number of elements from 2**1 to 2**12
-# case 1
+# testing p = 1 case 2 with FEM 
+# running code for p = 1 with increasing number of elements for 2**1 
+
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import integrate
@@ -65,8 +66,9 @@ def analytical_sol_case1(n):
     x = np.linspace(0, 1, 2**n+1)   
     a=4
     h = a**2 * k * R / 2
-    C = (T_l - Ta - (Tb-Ta)*np.cosh(a*L))/np.sinh(a*L)
-    D = 0 
+    Tl = 100
+    C = h/(k*a)*(Tl/(h/(k*a)*np.sinh(a*L)+np.cosh(a*L))-Ta)
+    D = Tl/(h/(k*a)*np.sinh(a*L)+np.cosh(a*L))-Ta
     T = C*np.sinh(a*x) + D*np.cosh(a*x) + Ta
     analytical_sol_list = []
     for i in np.nditer(T):
@@ -85,11 +87,15 @@ def calculateAssembleOutput(delta_x, number_of_elements):
     p = 1
     global_matrix_dim = number_of_elements*p + 1
     global_matrix = np.zeros((global_matrix_dim, global_matrix_dim))
-    print(global_matrix_dim)
+    #print(global_matrix_dim)
     #print(global_matrix)
 
     penality_factor = 10**20
-    global_matrix[0][0] = hierarchicalTest.k(1, 1, alpha, graphing_node_1) + penality_factor 
+    # Bar Parameters
+    k = .5                         # hermal conductivity of material
+    R = .1                         # radius
+    h = alpha**2 * k * R / 2       # heat transfer coefficient 
+    global_matrix[0][0] = hierarchicalTest.k(1, 1, alpha, graphing_node_1) + h/k
     global_matrix[0][1] = hierarchicalTest.k(1, 2, alpha, graphing_node_1)
 
     row_start = 0
@@ -104,6 +110,7 @@ def calculateAssembleOutput(delta_x, number_of_elements):
     #print(global_matrix)
 
     resultant_matrix = np.zeros((global_matrix_dim, 1))
+    
     resultant_matrix[len(resultant_matrix)-1][0] = 100*penality_factor
     #print(resultant_matrix)
 
@@ -112,15 +119,17 @@ def calculateAssembleOutput(delta_x, number_of_elements):
     middle = len(analytical_sol_case1(6))/2
     true_val = analytical_sol_case1(6)[int(middle)]
     error = (temp_outputs[len(temp_outputs)/2]) - true_val
-    #p1_error_array.append(error)
-    #p1_delta_array.append(delta_x)
-    #print(temp_outputs)
-
+    p1_error_array.append(error)
+    p1_delta_array.append(delta_x)
+    print("Estimated Temp at x = 0")
+    print(temp_outputs[0])
+    print("True temp")
+    print(analytical_sol_case1(n)[0])
 
     plt.plot(np.linspace(0, 1, len(temp_outputs)), temp_outputs, label = r'$\Delta x = {:.6f}$'.format(delta_x))
 
 
-for n in range(1, 12):
+for n in range(2, 10):
     delta_x = 1.0/(2**n)
     number_of_elements = 2**n
     calculateAssembleOutput(delta_x, number_of_elements)
@@ -128,21 +137,24 @@ for n in range(1, 12):
 
 plt.ylabel(u'T(x)\xb0C')
 plt.xlabel("x pos along rod")
-plt.plot(np.linspace(0, 1, len(analytical_sol_case1(14))), analytical_sol_case1(14), '--')
+plt.plot(np.linspace(0, 1, len(analytical_sol_case1(14))), analytical_sol_case1(14), '--', label = "True")
 
-plt.title("p=1, Temperature FEM output with increasing number of nodes:")
+plt.title("p=1, Case 2 Temperature FEM output with increasing number of nodes:")
 plt.legend()
 plt.show()
 
-p1_delta_array = np.log(np.abs(p1_delta_array))
-p1_error_array = np.log(np.abs(p1_error_array))
-middle = len(analytical_sol_case1(6))/2
-true_val = analytical_sol_case1(6)[int(middle)]
-print(true_val)
-#plt.plot(p1_delta_array, p1_error_array, '--')
-#print(p1_error_array)
-#print(p1_delta_array)
+p1_delta_array = -np.log(np.abs(p1_delta_array))
+p1_error_array = -np.log(np.abs(p1_error_array))
+plt.plot(p1_delta_array, p1_error_array, '--')
+print("log error values:")
+for num in p1_error_array:
+    print(str(num))
+print("log delta values:")
+for num in p1_delta_array:
+    print(num)
 
-#plt.title("log(DeltaX) vs log(error)")
-#plt.legend()
-#plt.show()
+plt.title("P =1 Case 2, -log(error) vs -log(DeltaX)")
+plt.xlabel("-log(Delta X)")
+plt.ylabel("-log(Error)")
+plt.legend()
+plt.show()

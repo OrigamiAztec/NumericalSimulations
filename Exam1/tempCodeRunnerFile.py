@@ -1,1 +1,1 @@
-delta_x = 0.03125
+ label = r'$\Delta x = {:.6f}$'.format(delta_x)

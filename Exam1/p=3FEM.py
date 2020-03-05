@@ -1,6 +1,5 @@
-#running code for p = 2 with increasing number of elements from 2**1 to 2**12
+# running code for p = 3 with increasing number of elements from 2**1 to 2**12
 # case 1
-
 import numpy as np
 from scipy import integrate
 import matplotlib.pyplot as plt
@@ -65,53 +64,56 @@ delta_x  = .5
 penality_factor = 10**20
 hierarchicalTest = hierarchicalShape()
 
-graphing_node_1 = np.linspace(delta_x*0, delta_x, 5000)
 
-graphing_node_2 = np.linspace(delta_x*1, delta_x*2, 5000)
-alpha = 4
-
-
-k_11 = hierarchicalTest.k(1, 1, alpha, graphing_node_1) -  hierarchicalTest.k(1, 3, alpha, graphing_node_1)* hierarchicalTest.k(3, 1, alpha, graphing_node_1) /  hierarchicalTest.k(3, 3, alpha, graphing_node_1) 
-k_12 = hierarchicalTest.k(1, 2, alpha, graphing_node_1) -  hierarchicalTest.k(1, 3, alpha, graphing_node_1)* hierarchicalTest.k(3, 2, alpha, graphing_node_1) /  hierarchicalTest.k(3, 3, alpha, graphing_node_1) 
-k_21 = hierarchicalTest.k(2, 1, alpha, graphing_node_1) -  hierarchicalTest.k(2, 3, alpha, graphing_node_1)* hierarchicalTest.k(3, 1, alpha, graphing_node_1) /  hierarchicalTest.k(3, 3, alpha, graphing_node_1) 
-k_22 = hierarchicalTest.k(2, 2, alpha, graphing_node_1) -  hierarchicalTest.k(2, 3, alpha, graphing_node_1)* hierarchicalTest.k(3, 2, alpha, graphing_node_1) /  hierarchicalTest.k(3, 3, alpha, graphing_node_1) 
 
 
 p1_error_array = []
 p1_delta_array = []
 
+alpha = 4
 def outputAssembledPlot():    
-    penality_factor = 10**20
-    hierarchicalTest = hierarchicalShape()
-
-    graphing_node_1 = np.linspace(delta_x*0, delta_x, 5000)
-
-    graphing_node_2 = np.linspace(delta_x*1, delta_x*2, 5000)
-
     alpha = 4
-    p = 2
+    graphing_node_1 = np.linspace(delta_x*0, delta_x, 5000)
+    k_11 = hierarchicalTest.k(1, 1, alpha, graphing_node_1)
+    k_12 = hierarchicalTest.k(1, 2, alpha, graphing_node_1)
+    k_13 = hierarchicalTest.k(1, 3, alpha, graphing_node_1)
+    k_14 = hierarchicalTest.k(1, 4, alpha, graphing_node_1)
+    k_21 = hierarchicalTest.k(2, 1, alpha, graphing_node_1)
+    k_22 = hierarchicalTest.k(2, 2, alpha, graphing_node_1)
+    k_23 = hierarchicalTest.k(2, 3, alpha, graphing_node_1)
+    k_24 = hierarchicalTest.k(2, 4, alpha, graphing_node_1)
+    k_31 = hierarchicalTest.k(3, 1, alpha, graphing_node_1)
+    k_32 = hierarchicalTest.k(3, 2, alpha, graphing_node_1)
+    k_33 = hierarchicalTest.k(3, 3, alpha, graphing_node_1)
+    k_34 = hierarchicalTest.k(3, 4, alpha, graphing_node_1)
+    k_41 = hierarchicalTest.k(4, 1, alpha, graphing_node_1)
+    k_42 = hierarchicalTest.k(4, 2, alpha, graphing_node_1)
+    k_43 = hierarchicalTest.k(4, 3, alpha, graphing_node_1)
+    k_44 = hierarchicalTest.k(4, 4, alpha, graphing_node_1)
+
+    k_11_bar = k_11 + k_13 * (-k_31*k_44 + k_41*k_34)/(k_33*k_44 - k_34*k_43) + k_14*(-k_41*k_33+k_31*k_43)/(k_33*k_44-k_34*k_43)
+    k_12_bar = k_12 + k_13 * (-k_32*k_44 + k_42*k_34)/(k_33*k_44 - k_34*k_43) + k_14*(-k_42*k_33+k_32*k_43)/(k_33*k_44-k_34*k_43)
+    k_21_bar = k_21 + k_23 * (-k_31*k_44 + k_41*k_34)/(k_33*k_44 - k_34*k_43) + k_24*(-k_41*k_33+k_31*k_43)/(k_33*k_44-k_34*k_43)
+    k_22_bar = k_22 + k_23 * (-k_32*k_44 + k_42*k_34)/(k_33*k_44 - k_34*k_43) + k_24*(-k_42*k_33+k_32*k_43)/(k_33*k_44-k_34*k_43)
+
+    penality_factor = 10**20
     global_matrix_dim = number_of_elements + 1
     #print(global_matrix_dim)
     # needs 5x5
     global_test_1 = np.zeros((global_matrix_dim, global_matrix_dim))
 
-    k_11 = hierarchicalTest.k(1, 1, alpha, graphing_node_1) -  hierarchicalTest.k(1, 3, alpha, graphing_node_1)* hierarchicalTest.k(3, 1, alpha, graphing_node_1) /  hierarchicalTest.k(3, 3, alpha, graphing_node_1) 
-    k_12 = hierarchicalTest.k(1, 2, alpha, graphing_node_1) -  hierarchicalTest.k(1, 3, alpha, graphing_node_1)* hierarchicalTest.k(3, 2, alpha, graphing_node_1) /  hierarchicalTest.k(3, 3, alpha, graphing_node_1) 
-    k_21 = hierarchicalTest.k(2, 1, alpha, graphing_node_1) -  hierarchicalTest.k(2, 3, alpha, graphing_node_1)* hierarchicalTest.k(3, 1, alpha, graphing_node_1) /  hierarchicalTest.k(3, 3, alpha, graphing_node_1) 
-    k_22 = hierarchicalTest.k(2, 2, alpha, graphing_node_1) -  hierarchicalTest.k(2, 3, alpha, graphing_node_1)* hierarchicalTest.k(3, 2, alpha, graphing_node_1) /  hierarchicalTest.k(3, 3, alpha, graphing_node_1) 
-
-    global_test_1[0][0] = k_11 + penality_factor
-    global_test_1[0][1] = k_12
+    global_test_1[0][0] = k_11_bar + penality_factor
+    global_test_1[0][1] = k_12_bar
 
     row_start = 0
     for num in range(1, number_of_elements):
-        global_test_1[num][row_start] = k_21
-        global_test_1[num][row_start+1] = k_22 + k_11
-        global_test_1[num][row_start+2] = k_12
+        global_test_1[num][row_start] = k_21_bar
+        global_test_1[num][row_start+1] = k_22_bar + k_11_bar
+        global_test_1[num][row_start+2] = k_12_bar
         row_start += 1
 
-    global_test_1[number_of_elements][number_of_elements-1] = k_21
-    global_test_1[number_of_elements][number_of_elements] = k_22 + penality_factor
+    global_test_1[number_of_elements][number_of_elements-1] = k_21_bar
+    global_test_1[number_of_elements][number_of_elements] = k_22_bar + penality_factor
 
     resultant_matrix = np.zeros((global_matrix_dim, 1))
     resultant_matrix[-1][-1] = 100*penality_factor
@@ -131,6 +133,7 @@ def outputAssembledPlot():
 
 for n in range(1, 13):
     delta_x  = 1.0/(2**n)
+    graphing_node_1 = np.linspace(delta_x*0, delta_x, 5000)
     number_of_elements = 2**n
     outputAssembledPlot()
 
@@ -140,17 +143,17 @@ p1_error_array = np.log(np.abs(p1_error_array))
 print(p1_error_array)
 print(p1_delta_array)
 
-plt.title("p=2, Temperature FEM output with increasing number of nodes:")
+plt.title("p=3, Temperature FEM output with increasing number of nodes:")
 plt.plot(np.linspace(0, 1, len(analytical_sol_case1(14))), analytical_sol_case1(14), '--', label = "true")
 plt.ylabel(u'T(x)\xb0C')
 plt.xlabel("x pos along rod")
 plt.legend()
 plt.show()
-
 """
-plt.title("p=2, log(deltaX) vs log(error)")
+plt.title("p=3, log(deltaX) vs log(error)")
 plt.plot(p1_error_array, p1_delta_array, '--')
 plt.ylabel(u'log(\Delta x)')
 plt.xlabel("log(error)")
 plt.legend()
-plt.show()"""
+plt.show()
+"""
