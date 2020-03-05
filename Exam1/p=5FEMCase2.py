@@ -1,5 +1,5 @@
 #running code for p = 5, running from deltaX =  2**1 to 2**12
-# case 1
+# case 2
 
 import numpy as np
 from scipy import integrate
@@ -52,8 +52,9 @@ def analytical_sol_case1(n):
     x = np.linspace(0, 1, 2**n+1)   
     a=4
     h = a**2 * k * R / 2
-    C = (T_l - Ta - (Tb-Ta)*np.cosh(a*L))/np.sinh(a*L)
-    D = 0 
+    Tl = 100
+    C = h/(k*a)*(Tl/(h/(k*a)*np.sinh(a*L)+np.cosh(a*L))-Ta)
+    D = Tl/(h/(k*a)*np.sinh(a*L)+np.cosh(a*L))-Ta
     T = C*np.sinh(a*x) + D*np.cosh(a*x) + Ta
     analytical_sol_list = []
     for i in np.nditer(T):
@@ -167,7 +168,11 @@ def outputAssembledPlot():
     #print(global_matrix_dim)
     global_test_1 = np.zeros((global_matrix_dim, global_matrix_dim))
 
-    global_test_1[0][0] = k_11_bar + penality_factor
+    k = .5                         # hermal conductivity of material
+    R = .1                         # radius
+    h = alpha**2 * k * R / 2       # heat transfer coefficient 
+
+    global_test_1[0][0] = k_11_bar + h/k
     global_test_1[0][1] = k_12_bar
 
     row_start = 0
@@ -190,44 +195,11 @@ def outputAssembledPlot():
     #print(temp_outputs)
     middle = len(analytical_sol_case1(6))/2
     true_val = analytical_sol_case1(6)[int(middle)]
-    error = ((temp_outputs[len(temp_outputs)/2]) - true_val)/true_val*100.0
-    #print(error)
+    error = (temp_outputs[len(temp_outputs)/2]) - true_val
     p1_error_array.append(error)
     p1_delta_array.append(delta_x)
 
-
     plt.plot(np.linspace(0, 1, len(temp_outputs)), temp_outputs,  label = r'$\Delta x = {:.4f}$'.format(delta_x))
-
-    Q_approx_list = []
-    flux_array = []
-    total_beta_list = []
-    total_error_list = []
-    total_error_list.append(error)
-
-    k=.5
-    R = .1
-    h = alpha**2*k*R/2
-    A_cross_section = np.pi * R**2   # cross sectional area
-  
-    T_n = temp_outputs[len(temp_outputs)-1]
-    T_n_min1 = temp_outputs[len(temp_outputs)-2]
-    q_dot_env_approx = (-k*A_cross_section*(-T_n_min1/delta_x+T_n/delta_x + alpha**2*T_n*delta_x**2/(2*delta_x)))
-    # not about this value, it is a value taken from Bradshaw report. This value is -6.283185307179588 from q_total variable in Hmwk1 python code, however the FDM values also seem to converge to -6.280376
-    q_dot_env_exact = -6.280376
-    Q_approx_list.append(temp_outputs[0])
-    beta = np.absolute(np.log((analytical_sol_case1(6)[0] - Q_approx_list[len(Q_approx_list)-1])  / (analytical_sol_case1(6)[0] - Q_approx_list[len(Q_approx_list)-2])) / np.log(2))
-    T_approx = temp_outputs[len(temp_outputs)/2]
-    T_exact = analytical_sol_case1(6)[len(analytical_sol_case1(6))/2]
-
-    print("n:")
-    print(n)
-    print("T_exact:")
-    print(T_exact)
-    print("T_approx:")
-    print(T_approx)
-    print("beta")
-    print(beta)
-    #print('DeltaX : {:.10f}, T_approx(0) : {:.10f}, T_exact(0) : {:.10f},Percent Error : {:.10f}, q_dot_total_approx : {:.10f}, q_dot_tota_exact : {:.10f} , beta : {:.10f}'.format(delta_x,T_approx, T_exact, total_error_list[-1], q_dot_env_approx, q_dot_env_exact, beta))
 
 for n in range(1, 13):
     delta_x  = 1.0/(2**n)
@@ -245,14 +217,14 @@ print("log delta values:")
 for num in p1_delta_array:
     print(num)
 
-plt.title("p=5, Temperature FEM output with increasing number of nodes:")
+plt.title("p=5, Case 2, Temperature FEM output with increasing number of nodes:")
 plt.plot(np.linspace(0, 1, len(analytical_sol_case1(14))), analytical_sol_case1(14), '--', label = "true")
 plt.ylabel(u'T(x)\xb0C')
 plt.xlabel("x pos along rod")
 plt.legend()
 plt.show()
 
-plt.title("p=5, case 1, -log(deltaX) vs -log(error)")
+plt.title("p=5, case 2, -log(deltaX) vs -log(error)")
 plt.plot(p1_delta_array, p1_error_array,'--')
 plt.xlabel(r'-log($\Delta$ x)')
 plt.ylabel("log(error)")

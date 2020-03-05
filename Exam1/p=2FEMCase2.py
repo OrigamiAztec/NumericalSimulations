@@ -142,23 +142,27 @@ for n in range(1, 13):
     number_of_elements = 2**n
     outputAssembledPlot()
 
-p1_delta_array = np.log(np.abs(p1_delta_array))
-p1_error_array = np.log(np.abs(p1_error_array))
+p1_delta_array = -np.log(np.abs(p1_delta_array))
+p1_error_array = -np.log(np.abs(p1_error_array))
 
-print(p1_error_array)
-print(p1_delta_array)
+print("-log(error):")
+for num in p1_error_array:
+    print(num)
+print("-log(deltaX):")
+for num in p1_delta_array:
+    print(num)
 
-plt.title("p=2, Temperature FEM output with increasing number of nodes:")
+plt.title("p=2, Case 2, Temperature FEM output with increasing number of nodes:")
 plt.plot(np.linspace(0, 1, len(analytical_sol_case1(14))), analytical_sol_case1(14), '--', label = "true")
 plt.ylabel(u'T(x)\xb0C')
 plt.xlabel("x pos along rod")
 plt.legend()
 plt.show()
 
-"""
+
 plt.title("p=2, log(deltaX) vs log(error)")
 plt.plot(p1_error_array, p1_delta_array, '--')
-plt.ylabel(u'log(\Delta x)')
-plt.xlabel("log(error)")
+plt.ylabel(u'-log(\Delta x)')
+plt.xlabel("-log(error)")
 plt.legend()
-plt.show()"""
+plt.show()

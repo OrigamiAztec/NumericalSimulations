@@ -1,6 +1,4 @@
-#running code for p = 5, running from deltaX =  2**1 to 2**12
-# case 1
-
+# p = 3 case 2 FEM
 import numpy as np
 from scipy import integrate
 import matplotlib.pyplot as plt
@@ -52,8 +50,9 @@ def analytical_sol_case1(n):
     x = np.linspace(0, 1, 2**n+1)   
     a=4
     h = a**2 * k * R / 2
-    C = (T_l - Ta - (Tb-Ta)*np.cosh(a*L))/np.sinh(a*L)
-    D = 0 
+    Tl = 100
+    C = h/(k*a)*(Tl/(h/(k*a)*np.sinh(a*L)+np.cosh(a*L))-Ta)
+    D = Tl/(h/(k*a)*np.sinh(a*L)+np.cosh(a*L))-Ta
     T = C*np.sinh(a*x) + D*np.cosh(a*x) + Ta
     analytical_sol_list = []
     for i in np.nditer(T):
@@ -65,109 +64,55 @@ delta_x  = .5
 penality_factor = 10**20
 hierarchicalTest = hierarchicalShape()
 
+graphing_node_1 = np.linspace(delta_x*0, delta_x, 5000)
+
+graphing_node_2 = np.linspace(delta_x*1, delta_x*2, 5000)
+alpha = 4
+
+
 p1_error_array = []
 p1_delta_array = []
 
-alpha = 4
-
 def outputAssembledPlot():    
-    alpha = 4
+    penality_factor = 10**20
+    hierarchicalTest = hierarchicalShape()
+
     graphing_node_1 = np.linspace(delta_x*0, delta_x, 5000)
+
+    alpha = 4
+
+    k = .5                         # hermal conductivity of material
+    R = .1                         # radius
+    h = alpha**2 * k * R / 2       # heat transfer coefficient 
+        
+    p = 2
+    global_matrix_dim = number_of_elements + 1
+    #print(global_matrix_dim)
+    # needs 5x5
+    global_test_1 = np.zeros((global_matrix_dim, global_matrix_dim))
+
     k_11 = hierarchicalTest.k(1, 1, alpha, graphing_node_1)
     k_12 = hierarchicalTest.k(1, 2, alpha, graphing_node_1)
     k_13 = hierarchicalTest.k(1, 3, alpha, graphing_node_1)
     k_14 = hierarchicalTest.k(1, 4, alpha, graphing_node_1)
-    k_15 = hierarchicalTest.k(1, 5, alpha, graphing_node_1)
-    k_16 = hierarchicalTest.k(1, 6, alpha, graphing_node_1)
     k_21 = hierarchicalTest.k(2, 1, alpha, graphing_node_1)
     k_22 = hierarchicalTest.k(2, 2, alpha, graphing_node_1)
     k_23 = hierarchicalTest.k(2, 3, alpha, graphing_node_1)
     k_24 = hierarchicalTest.k(2, 4, alpha, graphing_node_1)
-    k_25 = hierarchicalTest.k(2, 5, alpha, graphing_node_1)
-    k_26 = hierarchicalTest.k(2, 6, alpha, graphing_node_1)
     k_31 = hierarchicalTest.k(3, 1, alpha, graphing_node_1)
     k_32 = hierarchicalTest.k(3, 2, alpha, graphing_node_1)
     k_33 = hierarchicalTest.k(3, 3, alpha, graphing_node_1)
     k_34 = hierarchicalTest.k(3, 4, alpha, graphing_node_1)
-    k_35 = hierarchicalTest.k(3, 5, alpha, graphing_node_1)
-    k_36 = hierarchicalTest.k(3, 6, alpha, graphing_node_1)
     k_41 = hierarchicalTest.k(4, 1, alpha, graphing_node_1)
     k_42 = hierarchicalTest.k(4, 2, alpha, graphing_node_1)
     k_43 = hierarchicalTest.k(4, 3, alpha, graphing_node_1)
     k_44 = hierarchicalTest.k(4, 4, alpha, graphing_node_1)
-    k_45 = hierarchicalTest.k(4, 5, alpha, graphing_node_1)
-    k_46 = hierarchicalTest.k(4, 6, alpha, graphing_node_1)
-    k_51 = hierarchicalTest.k(5, 1, alpha, graphing_node_1)
-    k_52 = hierarchicalTest.k(5, 2, alpha, graphing_node_1)
-    k_53 = hierarchicalTest.k(5, 3, alpha, graphing_node_1)
-    k_54 = hierarchicalTest.k(5, 4, alpha, graphing_node_1)
-    k_55 = hierarchicalTest.k(5, 5, alpha, graphing_node_1)
-    k_56 = hierarchicalTest.k(5, 6, alpha, graphing_node_1)
-    k_61 = hierarchicalTest.k(6, 1, alpha, graphing_node_1)
-    k_62 = hierarchicalTest.k(6, 2, alpha, graphing_node_1)
-    k_63 = hierarchicalTest.k(6, 3, alpha, graphing_node_1)
-    k_64 = hierarchicalTest.k(6, 4, alpha, graphing_node_1)
-    k_65 = hierarchicalTest.k(6, 5, alpha, graphing_node_1)
-    k_66 = hierarchicalTest.k(6, 6, alpha, graphing_node_1)
-    
-    A = np.zeros((2, 2))
-    A[0][0] = k_11
-    A[0][1] = k_12
-    A[1][0] = k_21
-    A[1][1] = k_22
 
-    B = np.zeros((2, 4))
-    B[0][0] = k_13
-    B[0][1] = k_14
-    B[0][2] = k_15
-    B[0][3] = k_16
-    B[1][0] = k_23
-    B[1][1] = k_24
-    B[1][2] = k_25
-    B[1][3] = k_26
-
-    D = np.zeros((4, 4))
-    D[0][0] = k_33
-    D[0][1] = k_34
-    D[0][2] = k_35
-    D[0][3] = k_36
-    D[1][0] = k_43
-    D[1][1] = k_44
-    D[1][2] = k_45
-    D[1][3] = k_46
-    D[2][0] = k_53
-    D[2][1] = k_54
-    D[2][2] = k_55
-    D[2][3] = k_56
-    D[3][0] = k_63
-    D[3][1] = k_64
-    D[3][2] = k_65
-    D[3][3] = k_66
-
-    C = np.zeros((4, 2))
-    C[0][0] = k_31
-    C[0][1] = k_32
-    C[1][0] = k_41
-    C[1][1] = k_42
-    C[2][0] = k_51
-    C[2][1] = k_52
-    C[3][0] = k_61
-    C[3][1] = k_62
-
-    #the matrix that will be assembled:
-    K = np.subtract(A, np.linalg.multi_dot([B, np.linalg.inv(D), C]))
-
-    k_11_bar = K[0,0]
-    k_12_bar = K[0, 1]
-    k_21_bar = K[1, 0]
-    k_22_bar = K[1, 1]
-
-    penality_factor = 10**20
-    global_matrix_dim = number_of_elements + 1
-    #print(global_matrix_dim)
-    global_test_1 = np.zeros((global_matrix_dim, global_matrix_dim))
-
-    global_test_1[0][0] = k_11_bar + penality_factor
+    k_11_bar = k_11 + k_13 * (-k_31*k_44 + k_41*k_34)/(k_33*k_44 - k_34*k_43) + k_14*(-k_41*k_33+k_31*k_43)/(k_33*k_44-k_34*k_43)
+    k_12_bar = k_12 + k_13 * (-k_32*k_44 + k_42*k_34)/(k_33*k_44 - k_34*k_43) + k_14*(-k_42*k_33+k_32*k_43)/(k_33*k_44-k_34*k_43)
+    k_21_bar = k_21 + k_23 * (-k_31*k_44 + k_41*k_34)/(k_33*k_44 - k_34*k_43) + k_24*(-k_41*k_33+k_31*k_43)/(k_33*k_44-k_34*k_43)
+    k_22_bar = k_22 + k_23 * (-k_32*k_44 + k_42*k_34)/(k_33*k_44 - k_34*k_43) + k_24*(-k_42*k_33+k_32*k_43)/(k_33*k_44-k_34*k_43)
+    global_test_1[0][0] = k_11_bar + h/k
     global_test_1[0][1] = k_12_bar
 
     row_start = 0
@@ -187,74 +132,45 @@ def outputAssembledPlot():
     #print(resultant_matrix)
 
     temp_outputs = np.linalg.solve(global_test_1,resultant_matrix)
-    #print(temp_outputs)
+    print("Estimated from code: ")
+    print(temp_outputs[0])
+    print("true:")
+    print(analytical_sol_case1(12)[0])
+
     middle = len(analytical_sol_case1(6))/2
-    true_val = analytical_sol_case1(6)[int(middle)]
-    error = ((temp_outputs[len(temp_outputs)/2]) - true_val)/true_val*100.0
-    #print(error)
+    true_val = analytical_sol_case1(12)[0]
+    error = (temp_outputs[0]) - true_val
     p1_error_array.append(error)
     p1_delta_array.append(delta_x)
-
-
+    
     plt.plot(np.linspace(0, 1, len(temp_outputs)), temp_outputs,  label = r'$\Delta x = {:.4f}$'.format(delta_x))
-
-    Q_approx_list = []
-    flux_array = []
-    total_beta_list = []
-    total_error_list = []
-    total_error_list.append(error)
-
-    k=.5
-    R = .1
-    h = alpha**2*k*R/2
-    A_cross_section = np.pi * R**2   # cross sectional area
-  
-    T_n = temp_outputs[len(temp_outputs)-1]
-    T_n_min1 = temp_outputs[len(temp_outputs)-2]
-    q_dot_env_approx = (-k*A_cross_section*(-T_n_min1/delta_x+T_n/delta_x + alpha**2*T_n*delta_x**2/(2*delta_x)))
-    # not about this value, it is a value taken from Bradshaw report. This value is -6.283185307179588 from q_total variable in Hmwk1 python code, however the FDM values also seem to converge to -6.280376
-    q_dot_env_exact = -6.280376
-    Q_approx_list.append(temp_outputs[0])
-    beta = np.absolute(np.log((analytical_sol_case1(6)[0] - Q_approx_list[len(Q_approx_list)-1])  / (analytical_sol_case1(6)[0] - Q_approx_list[len(Q_approx_list)-2])) / np.log(2))
-    T_approx = temp_outputs[len(temp_outputs)/2]
-    T_exact = analytical_sol_case1(6)[len(analytical_sol_case1(6))/2]
-
-    print("n:")
-    print(n)
-    print("T_exact:")
-    print(T_exact)
-    print("T_approx:")
-    print(T_approx)
-    print("beta")
-    print(beta)
-    #print('DeltaX : {:.10f}, T_approx(0) : {:.10f}, T_exact(0) : {:.10f},Percent Error : {:.10f}, q_dot_total_approx : {:.10f}, q_dot_tota_exact : {:.10f} , beta : {:.10f}'.format(delta_x,T_approx, T_exact, total_error_list[-1], q_dot_env_approx, q_dot_env_exact, beta))
 
 for n in range(1, 13):
     delta_x  = 1.0/(2**n)
-    graphing_node_1 = np.linspace(delta_x*0, delta_x, 5000)
     number_of_elements = 2**n
     outputAssembledPlot()
 
 p1_delta_array = -np.log(np.abs(p1_delta_array))
 p1_error_array = -np.log(np.abs(p1_error_array))
 
-print("log error values:")
+print("-log(error):")
 for num in p1_error_array:
     print(num)
-print("log delta values:")
+print("-log(deltaX):")
 for num in p1_delta_array:
     print(num)
 
-plt.title("p=5, Temperature FEM output with increasing number of nodes:")
+plt.title("p=3, Case 2, Temperature FEM output with increasing number of nodes:")
 plt.plot(np.linspace(0, 1, len(analytical_sol_case1(14))), analytical_sol_case1(14), '--', label = "true")
 plt.ylabel(u'T(x)\xb0C')
 plt.xlabel("x pos along rod")
 plt.legend()
 plt.show()
 
-plt.title("p=5, case 1, -log(deltaX) vs -log(error)")
-plt.plot(p1_delta_array, p1_error_array,'--')
-plt.xlabel(r'-log($\Delta$ x)')
-plt.ylabel("log(error)")
+
+plt.title("p=3, log(deltaX) vs log(error)")
+plt.plot(p1_error_array, p1_delta_array, '--')
+plt.ylabel(u'-log(\Delta x)')
+plt.xlabel("-log(error)")
 plt.legend()
 plt.show()
