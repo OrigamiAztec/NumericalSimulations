@@ -132,7 +132,7 @@ def outputAssembledPlot():
     #print(temp_outputs)
     middle = len(analytical_sol_case1(6))/2
     true_val = analytical_sol_case1(6)[int(middle)]
-    error = (temp_outputs[len(temp_outputs)/2]) - true_val
+    error = (temp_outputs[int(len(temp_outputs)/2)]) - true_val
     #p1_error_array.append(error)
     #p1_delta_array.append(delta_x)
 
